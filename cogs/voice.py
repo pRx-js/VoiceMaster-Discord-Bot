@@ -35,7 +35,7 @@ class voice(commands.Cog):
                     if cooldown is None:
                         pass
                     else:
-                        await member.send("Creating channels too quickly you've been put on a 15 second cooldown!")
+                        await member.send("Çok hızlı kanal oluşturuyorsunuz! **15** Saniye zaman aşımına uğratıldınız.")
                         await asyncio.sleep(15)
                     c.execute("SELECT voiceCategoryID FROM guild WHERE guildID = ?", (guildID,))
                     voice=c.fetchone()
@@ -44,7 +44,7 @@ class voice(commands.Cog):
                     c.execute("SELECT channelLimit FROM guildSettings WHERE guildID = ?", (guildID,))
                     guildSetting=c.fetchone()
                     if setting is None:
-                        name = f"{member.name}'s channel"
+                        name = f"{member.name}'in Odası"
                         if guildSetting is None:
                             limit = 0
                         else:
@@ -81,45 +81,45 @@ class voice(commands.Cog):
         conn.close()
 
     @commands.command()
-    async def help(self, ctx):
-        embed = discord.Embed(title="Help", description="",color=0x7289da)
-        embed.set_author(name="Voice Create",url="https://discordbots.org/bot/472911936951156740", icon_url="https://i.imgur.com/i7vvOo5.png")
-        embed.add_field(name=f'**Commands**', value=f'**Lock your channel by using the following command:**\n\n`.voice lock`\n\n------------\n\n'
-                        f'**Unlock your channel by using the following command:**\n\n`.voice unlock`\n\n------------\n\n'
-                        f'**Change your channel name by using the following command:**\n\n`.voice name <name>`\n\n**Example:** `.voice name EU 5kd+`\n\n------------\n\n'
-                        f'**Change your channel limit by using the following command:**\n\n`.voice limit number`\n\n**Example:** `.voice limit 2`\n\n------------\n\n'
-                        f'**Give users permission to join by using the following command:**\n\n`.voice permit @person`\n\n**Example:** `.voice permit @Sam#9452`\n\n------------\n\n'
-                        f'**Claim ownership of channel once the owner has left:**\n\n`.voice claim`\n\n**Example:** `.voice claim`\n\n------------\n\n'
-                        f'**Remove permission and the user from your channel using the following command:**\n\n`.voice reject @person`\n\n**Example:** `.voice reject @Sam#9452`\n\n', inline='false')
-        embed.set_footer(text='Bot developed by Sam#9452')
+    async def yardım(self, ctx):
+        embed = discord.Embed(title="Yardım", description="",color=0x7289da)
+        embed.set_author(name="Börü Özel Sohbet Yardım menüsü",url="https://steamcommunity.com/groups/borugamingg", icon_url="https://cdn.discordapp.com/avatars/702441843333529630/19fc69e335e3115bec14c4caf5f7d254.png?size=2048")
+        embed.add_field(name=f'**Komutlar**', value=f'**Kanalı Kilitlemek İçin:**\n\n`.voice kilit`\n\n------------\n\n'
+                        f'**Kiliti Açmak İçin:**\n\n`.voice kilitaç`\n\n------------\n\n'
+                        f'**Kanalınızın İsmini Değiştirmek İçin:**\n\n`.voice isim <isim>`\n\n**Örnek:** `.voice isim gays`\n\n------------\n\n'
+                        f'**Kanalınızın Limitini Değiştirmek İçin:**\n\n`.voice limit <sayı>`\n\n**Örnek:** `.voice limit 3`\n\n------------\n\n'
+                        f'**Başka Kullanıcılara Odanıza Katılım İzni Vermek İçin:**\n\n`.voice izinver @kişi`\n\n**Örnek:** `.voice izinver @pRx`\n\n------------\n\n'
+                        f'**Odanın Sahibi Odadan Çıkmış İse Sahipliği Almak İçin:**\n\n`.voice sahipol`\n\n**Örnek:** `.voice sahipol`\n\n------------\n\n'
+f'**Odanın Sahibi Odadan Çıkmış İse Sahipliği Almak İçin:**\n\n`.voice sahipol`\n\n**Örnek:** `.voice sahipol`\n\n------------\n\n'
+                        f'**Başka Kullanıcılardan Katılım İznini Almak İçin:**\n\n`.voice izinal @kişi`\n\n**Example:** `.voice izinal @pRx`\n\n', inline='false')
         await ctx.channel.send(embed=embed)
 
     @commands.group()
     async def voice(self, ctx):
         pass
 
-    @voice.command()
-    async def setup(self, ctx):
+    @voice.command(aliases=["setup"])
+    async def kurulum(self, ctx):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         guildID = ctx.guild.id
         id = ctx.author.id
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id == 151028268856770560:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id == 385001389119504384:
             def check(m):
                 return m.author.id == ctx.author.id
-            await ctx.channel.send("**You have 60 seconds to answer each question!**")
-            await ctx.channel.send(f"**Enter the name of the category you wish to create the channels in:(e.g Voice Channels)**")
+            await ctx.channel.send("**Her Bir Soruyu Cevaplamak İçin 60 Saniyeniz Var.**")
+            await ctx.channel.send(f"**Kanalların Oluşturulacağı Kategorinin İsmini Giriniz (ör. Özel Sohbet)**")
             try:
                 category = await self.bot.wait_for('message', check=check, timeout = 60.0)
             except asyncio.TimeoutError:
-                await ctx.channel.send('Took too long to answer!')
+                await ctx.channel.send('Cevap vermek çok uzun sürdü!')
             else:
                 new_cat = await ctx.guild.create_category_channel(category.content)
-                await ctx.channel.send('**Enter the name of the voice channel: (e.g Join To Create)**')
+                await ctx.channel.send('**Özel Oda Oluşturmak İçin Girilmesi Gereken Ses Kanalının İsmini Giriniz (ör. Özel Oda Oluştur)**')
                 try:
                     channel = await self.bot.wait_for('message', check=check, timeout = 60.0)
                 except asyncio.TimeoutError:
-                    await ctx.channel.send('Took too long to answer!')
+                    await ctx.channel.send('Cevap vermek çok uzun sürdü!')
                 else:
                     try:
                         channel = await ctx.guild.create_voice_channel(channel.content, category=new_cat)
@@ -129,16 +129,16 @@ class voice(commands.Cog):
                             c.execute ("INSERT INTO guild VALUES (?, ?, ?, ?)",(guildID,id,channel.id,new_cat.id))
                         else:
                             c.execute ("UPDATE guild SET guildID = ?, ownerID = ?, voiceChannelID = ?, voiceCategoryID = ? WHERE guildID = ?",(guildID,id,channel.id,new_cat.id, guildID))
-                        await ctx.channel.send("**You are all setup and ready to go!**")
+                        await ctx.channel.send("**Kurulum Tamamlandı!**")
                     except:
-                        await ctx.channel.send("You didn't enter the names properly.\nUse `.voice setup` again!")
+                        await ctx.channel.send("Kurulum tamamlanamadı.\nLütfen `.voice kurulum` ile tekrar kurulum başlatınız!")
         else:
-            await ctx.channel.send(f"{ctx.author.mention} only the owner of the server can setup the bot!")
+            await ctx.channel.send(f"{ctx.author.mention} Sadece **Sunucu Sahibi** Kurulum Başlatabilir!")
         conn.commit()
         conn.close()
 
     @commands.command()
-    async def setlimit(self, ctx, num):
+    async def varsayılanlimitayarla(self, ctx, num):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         if ctx.author.id == ctx.guild.owner.id or ctx.author.id == 151028268856770560:
@@ -148,9 +148,9 @@ class voice(commands.Cog):
                 c.execute("INSERT INTO guildSettings VALUES (?, ?, ?)", (ctx.guild.id,f"{ctx.author.name}'s channel",num))
             else:
                 c.execute("UPDATE guildSettings SET channelLimit = ? WHERE guildID = ?", (num, ctx.guild.id))
-            await ctx.send("You have changed the default channel limit for your server!")
+            await ctx.send("Varsayılan Kanal Limiti Değiştirildi!")
         else:
-            await ctx.channel.send(f"{ctx.author.mention} only the owner of the server can setup the bot!")
+            await ctx.channel.send(f"{ctx.author.mention} Sadece **Sunucu Sahibi** Bu komutu ayarlayabilir.!")
         conn.commit()
         conn.close()
 
@@ -158,61 +158,61 @@ class voice(commands.Cog):
     async def info_error(self, ctx, error):
         print(error)
 
-    @voice.command()
-    async def lock(self, ctx):
+    @voice.command(aliases=["lock"])
+    async def kilit(self, ctx):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         id = ctx.author.id
         c.execute("SELECT voiceID FROM voiceChannel WHERE userID = ?", (id,))
         voice=c.fetchone()
         if voice is None:
-            await ctx.channel.send(f"{ctx.author.mention} You don't own a channel.")
+            await ctx.channel.send(f"{ctx.author.mention} Bir kanala sahip değilsiniz!")
         else:
             channelID = voice[0]
             role = discord.utils.get(ctx.guild.roles, name='@everyone')
             channel = self.bot.get_channel(channelID)
             await channel.set_permissions(role, connect=False,read_messages=True)
-            await ctx.channel.send(f'{ctx.author.mention} Voice chat locked! 🔒')
+            await ctx.channel.send(f'🔒 {ctx.author.mention} Özel Odanız **Kilitlendi!**')
         conn.commit()
         conn.close()
 
-    @voice.command()
-    async def unlock(self, ctx):
+    @voice.command(aliases=["unlock"])
+    async def kilitaç(self, ctx):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         id = ctx.author.id
         c.execute("SELECT voiceID FROM voiceChannel WHERE userID = ?", (id,))
         voice=c.fetchone()
         if voice is None:
-            await ctx.channel.send(f"{ctx.author.mention} You don't own a channel.")
+            await ctx.channel.send(f"{ctx.author.mention} Bir kanala sahip değilsiniz!")
         else:
             channelID = voice[0]
             role = discord.utils.get(ctx.guild.roles, name='@everyone')
             channel = self.bot.get_channel(channelID)
             await channel.set_permissions(role, connect=True,read_messages=True)
-            await ctx.channel.send(f'{ctx.author.mention} Voice chat unlocked! 🔓')
+            await ctx.channel.send(f'🔓 {ctx.author.mention} Özel Odanızın **Kiliti Açıldı!**')
         conn.commit()
         conn.close()
 
-    @voice.command(aliases=["allow"])
-    async def permit(self, ctx, member : discord.Member):
+    @voice.command(aliases=["onayla"])
+    async def izinver(self, ctx, member : discord.Member):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         id = ctx.author.id
         c.execute("SELECT voiceID FROM voiceChannel WHERE userID = ?", (id,))
         voice=c.fetchone()
         if voice is None:
-            await ctx.channel.send(f"{ctx.author.mention} You don't own a channel.")
+            await ctx.channel.send(f"{ctx.author.mention} Bir kanala sahip değilsiniz!")
         else:
             channelID = voice[0]
             channel = self.bot.get_channel(channelID)
             await channel.set_permissions(member, connect=True)
-            await ctx.channel.send(f'{ctx.author.mention} You have permited {member.name} to have access to the channel. ✅')
+            await ctx.channel.send(f'✅ {ctx.author.mention}, {member.name} Adlı kullanıcının özel odanıza erişmesine izin verdiniz.')
         conn.commit()
         conn.close()
 
-    @voice.command(aliases=["deny"])
-    async def reject(self, ctx, member : discord.Member):
+    @voice.command(aliases=["reddet"])
+    async def izinal(self, ctx, member : discord.Member):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         id = ctx.author.id
@@ -220,7 +220,7 @@ class voice(commands.Cog):
         c.execute("SELECT voiceID FROM voiceChannel WHERE userID = ?", (id,))
         voice=c.fetchone()
         if voice is None:
-            await ctx.channel.send(f"{ctx.author.mention} You don't own a channel.")
+            await ctx.channel.send(f"{ctx.author.mention} Bir kanala sahip değilsiniz!")
         else:
             channelID = voice[0]
             channel = self.bot.get_channel(channelID)
@@ -231,13 +231,13 @@ class voice(commands.Cog):
                     channel2 = self.bot.get_channel(voice[0])
                     await member.move_to(channel2)
             await channel.set_permissions(member, connect=False,read_messages=True)
-            await ctx.channel.send(f'{ctx.author.mention} You have rejected {member.name} from accessing the channel. ❌')
+            await ctx.channel.send(f'❌{ctx.author.mention}, {member.name} Adlı kullanıcının özel odanıza erişimini reddettiniz. ')
         conn.commit()
         conn.close()
 
 
 
-    @voice.command()
+    @voice.command(aliases=["kanallimiti"])
     async def limit(self, ctx, limit):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
@@ -245,12 +245,12 @@ class voice(commands.Cog):
         c.execute("SELECT voiceID FROM voiceChannel WHERE userID = ?", (id,))
         voice=c.fetchone()
         if voice is None:
-            await ctx.channel.send(f"{ctx.author.mention} You don't own a channel.")
+            await ctx.channel.send(f"{ctx.author.mention} Bir kanala sahip değilsiniz!")
         else:
             channelID = voice[0]
             channel = self.bot.get_channel(channelID)
             await channel.edit(user_limit = limit)
-            await ctx.channel.send(f'{ctx.author.mention} You have set the channel limit to be '+ '{}!'.format(limit))
+            await ctx.channel.send(f'{ctx.author.mention} Kanalınızın limiti başarıyla değiştirdiniz: '+ '{}!'.format(limit))
             c.execute("SELECT channelName FROM userSettings WHERE userID = ?", (id,))
             voice=c.fetchone()
             if voice is None:
@@ -261,20 +261,20 @@ class voice(commands.Cog):
         conn.close()
 
 
-    @voice.command()
-    async def name(self, ctx,*, name):
+    @voice.command(aliases=["addeğiştir"])
+    async def isim(self, ctx,*, name):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         id = ctx.author.id
         c.execute("SELECT voiceID FROM voiceChannel WHERE userID = ?", (id,))
         voice=c.fetchone()
         if voice is None:
-            await ctx.channel.send(f"{ctx.author.mention} You don't own a channel.")
+            await ctx.channel.send(f"{ctx.author.mention} Bir kanala sahip değilsiniz!")
         else:
             channelID = voice[0]
             channel = self.bot.get_channel(channelID)
             await channel.edit(name = name)
-            await ctx.channel.send(f'{ctx.author.mention} You have changed the channel name to '+ '{}!'.format(name))
+            await ctx.channel.send(f'{ctx.author.mention} Kanalınızın ismini başarıyla değiştirdiniz: '+ '{}!'.format(name))
             c.execute("SELECT channelName FROM userSettings WHERE userID = ?", (id,))
             voice=c.fetchone()
             if voice is None:
@@ -284,28 +284,28 @@ class voice(commands.Cog):
         conn.commit()
         conn.close()
 
-    @voice.command()
-    async def claim(self, ctx):
+    @voice.command(aliases=["sahiplen"])
+    async def sahipol(self, ctx):
         x = False
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
         channel = ctx.author.voice.channel
         if channel == None:
-            await ctx.channel.send(f"{ctx.author.mention} you're not in a voice channel.")
+            await ctx.channel.send(f"{ctx.author.mention} bir ses kanalında değilsiniz.")
         else:
             id = ctx.author.id
             c.execute("SELECT userID FROM voiceChannel WHERE voiceID = ?", (channel.id,))
             voice=c.fetchone()
             if voice is None:
-                await ctx.channel.send(f"{ctx.author.mention} You can't own that channel!")
+                await ctx.channel.send(f"{ctx.author.mention} Bu kanala sahip olamazsınız!")
             else:
                 for data in channel.members:
                     if data.id == voice[0]:
                         owner = ctx.guild.get_member(voice [0])
-                        await ctx.channel.send(f"{ctx.author.mention} This channel is already owned by {owner.mention}!")
+                        await ctx.channel.send(f"{ctx.author.mention} Bu kanal zaten {owner.mention} tarafından sahiplenilmiş!")
                         x = True
                 if x == False:
-                    await ctx.channel.send(f"{ctx.author.mention} You are now the owner of the channel!")
+                    await ctx.channel.send(f"{ctx.author.mention} Kanalın sahipi değilsiniz")
                     c.execute("UPDATE voiceChannel SET userID = ? WHERE voiceID = ?", (id, channel.id))
             conn.commit()
             conn.close()
