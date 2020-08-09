@@ -86,11 +86,12 @@ class voice(commands.Cog):
         embed.set_author(name="Börü Özel Sohbet Yardım menüsü",url="https://steamcommunity.com/groups/borugamingg", icon_url="https://cdn.discordapp.com/avatars/702441843333529630/19fc69e335e3115bec14c4caf5f7d254.png?size=2048")
         embed.add_field(name=f'**Komutlar**', value=f'**Kanalı Kilitlemek İçin:**\n\n`.voice kilit`\n\n------------\n\n'
                         f'**Kiliti Açmak İçin:**\n\n`.voice kilitaç`\n\n------------\n\n'
+                        f'**Kurulum Başlatmak İçin:**\n\n`.voice kurulum`\n\n------------\n\n'
+                        f'**Varsayılan Oda limitini Ayarlamak İçin:**\n\n`.voice varsayılanlimitayarla <sayı>`\n\n**Örnek:** `.voice varsayılanlimitayarla 3`\n\n------------\n\n'
                         f'**Kanalınızın İsmini Değiştirmek İçin:**\n\n`.voice isim <isim>`\n\n**Örnek:** `.voice isim gays`\n\n------------\n\n'
                         f'**Kanalınızın Limitini Değiştirmek İçin:**\n\n`.voice limit <sayı>`\n\n**Örnek:** `.voice limit 3`\n\n------------\n\n'
                         f'**Başka Kullanıcılara Odanıza Katılım İzni Vermek İçin:**\n\n`.voice izinver @kişi`\n\n**Örnek:** `.voice izinver @pRx`\n\n------------\n\n'
                         f'**Odanın Sahibi Odadan Çıkmış İse Sahipliği Almak İçin:**\n\n`.voice sahipol`\n\n**Örnek:** `.voice sahipol`\n\n------------\n\n'
-f'**Odanın Sahibi Odadan Çıkmış İse Sahipliği Almak İçin:**\n\n`.voice sahipol`\n\n**Örnek:** `.voice sahipol`\n\n------------\n\n'
                         f'**Başka Kullanıcılardan Katılım İznini Almak İçin:**\n\n`.voice izinal @kişi`\n\n**Example:** `.voice izinal @pRx`\n\n', inline='false')
         await ctx.channel.send(embed=embed)
 
@@ -141,11 +142,11 @@ f'**Odanın Sahibi Odadan Çıkmış İse Sahipliği Almak İçin:**\n\n`.voice 
     async def varsayılanlimitayarla(self, ctx, num):
         conn = sqlite3.connect('voice.db')
         c = conn.cursor()
-        if ctx.author.id == ctx.guild.owner.id or ctx.author.id == 151028268856770560:
+        if ctx.author.id == ctx.guild.owner.id or ctx.author.id == 385001389119504384:
             c.execute("SELECT * FROM guildSettings WHERE guildID = ?", (ctx.guild.id,))
             voice=c.fetchone()
             if voice is None:
-                c.execute("INSERT INTO guildSettings VALUES (?, ?, ?)", (ctx.guild.id,f"{ctx.author.name}'s channel",num))
+                c.execute("INSERT INTO guildSettings VALUES (?, ?, ?)", (ctx.guild.id,f"{ctx.author.name}'in Odası",num))
             else:
                 c.execute("UPDATE guildSettings SET channelLimit = ? WHERE guildID = ?", (num, ctx.guild.id))
             await ctx.send("Varsayılan Kanal Limiti Değiştirildi!")
@@ -231,7 +232,7 @@ f'**Odanın Sahibi Odadan Çıkmış İse Sahipliği Almak İçin:**\n\n`.voice 
                     channel2 = self.bot.get_channel(voice[0])
                     await member.move_to(channel2)
             await channel.set_permissions(member, connect=False,read_messages=True)
-            await ctx.channel.send(f'❌{ctx.author.mention}, {member.name} Adlı kullanıcının özel odanıza erişimini reddettiniz. ')
+            await ctx.channel.send(f'❌ {ctx.author.mention}, {member.name} Adlı kullanıcının özel odanıza erişimini reddettiniz. ')
         conn.commit()
         conn.close()
 
